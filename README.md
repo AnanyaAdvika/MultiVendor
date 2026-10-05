@@ -1,0 +1,225 @@
+# NexStore — Full-Stack Multi-Vendor E-Commerce Platform
+
+A production-style, modern, full-stack **Multi-Vendor E-Commerce Platform** built from scratch using **React, TypeScript, Vite, Tailwind CSS, Node.js, Express, PostgreSQL, and Prisma ORM**.
+
+Designed with clean component architecture, role-based access control (Customer, Vendor, Admin), and five signature marketplace innovations.
+
+---
+
+## 🌟 Demo Credentials (Instant Access)
+
+The application includes an automated database seed with pre-populated merchants, products, deals, reviews, and test accounts. You can also use the **1-Click Demo Login** buttons on the `/login` page:
+
+| Role | Email | Password | Store Name / Details |
+| :--- | :--- | :--- | :--- |
+| **Customer** | `customer@example.com` | `password123` | Priya Sharma (Active Cart & Orders) |
+| **Vendor 1** | `vendor1@example.com` | `password123` | **ElectroHub Direct** (Trust: 95%) |
+| **Vendor 2** | `vendor2@example.com` | `password123` | **GadgetWorld Superstore** (Trust: 91%) |
+| **Vendor 3** | `vendor3@example.com` | `password123` | **EcoLiving Earth Essentials** (Trust: 98%, Eco-Certified) |
+| **Admin** | `admin@example.com` | `password123` | Marketplace Administrator |
+
+---
+
+## 🚀 Key Signature Features
+
+### 1. 🔥 Best Deal Comparison
+When identical or equivalent products are available from multiple approved vendors in the marketplace (e.g. *Sony WH-1000XM5*, *Apple iPhone 15 Pro*, *MacBook Air M3*):
+- The product page dynamically presents an interactive **Multi-Vendor Price Comparison Table**.
+- Highlights the **Guaranteed Lowest Price Deal** with a glowing badge.
+- Shows side-by-side pricing, discount percentage, delivery timeline, and each seller's **Trust Score**.
+- Allows customers to buy directly from the cheapest seller with a single click.
+
+### 2. 💡 Smart Cart Savings
+When a customer reviews their shopping cart:
+- The system scans the cart items in real time against all active sellers in the marketplace.
+- If another approved vendor offers the same item at a lower price, an eye-catching callout appears:
+  > *"You can save ₹2,000 by buying this item from GadgetWorld Superstore!"*
+- Features a **1-Click "Switch & Save"** button that immediately swaps the cart item to the cheaper vendor's product and updates the cart total.
+- Recommends eligible coupons (e.g. `WELCOME10`, `ECOSAVE`, `MEGA500`) based on cart contents.
+
+### 3. 📦 One Cart, Multiple Vendors (Automated Order Splitting)
+Customers can freely add items from different sellers into one unified cart and check out in a single transaction:
+- The backend database creates a **Master Customer Order** with total billing and shipping address.
+- Behind the scenes, the order is split into **Vendor-Specific Sub-Orders (`VendorOrder`)**.
+- Each seller receives their own package with vendor earnings and dispatch tracking.
+- Sellers can only see and fulfill items belonging to their store.
+- Customers track delivery progress for each package independently and can download a unified **Printable Tax Invoice**.
+
+### 4. 🛡️ Vendor Trust Score
+Every merchant receives an algorithmic trust rating (0–100%) calculated dynamically:
+- **Customer Ratings Factor (40%)**: Verified buyer ratings out of 5 stars.
+- **Fulfillment Success Rate (30%)**: Completed orders vs cancellations.
+- **On-Time Delivery Rate (20%)**: Shipments dispatched within SLA.
+- **Verification & Eco Standards (10%)**: Merchant background verification and sustainable practices.
+- Badges displayed: **Top Rated Trusted Vendor**, **Verified Vendor**, and **Active Seller**.
+
+### 5. 🌿 Eco-Friendly Marketplace Feature
+- Vendors can certify items and packaging as eco-friendly (zero-plastic, biodegradable, FSC certified).
+- Customers can filter the catalog using the **"🌱 Eco-Friendly Only"** toggle.
+- Eco-conscious badges are rendered across cards, details, and checkout.
+- Exclusive coupon code **`ECOSAVE`** unlocks 15% discount for green living items.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Frontend**:
+  - React 18 with TypeScript
+  - Vite (Lightning-fast HMR and optimized production bundling)
+  - Tailwind CSS (Modern, clean, responsive marketplace UI)
+  - Lucide React (Clean icon system)
+  - Canvas Confetti (Checkout celebration animations)
+- **Backend**:
+  - Node.js & Express with TypeScript
+  - Prisma ORM (Type-safe database client and migrations)
+  - PostgreSQL (Production standard, Docker-ready) / SQLite (Zero-friction local dev)
+  - JSON Web Tokens (JWT) & bcryptjs authentication
+  - Zod validation and structured error handling
+- **Architecture**:
+  - RESTful API design with separation of concerns (Routes, Controllers, Services, Middlewares)
+  - Role-based route guards (`CUSTOMER`, `VENDOR`, `ADMIN`)
+
+---
+
+## 📁 Project Structure
+
+```
+MultiVendor/
+├── client/                     # Frontend Application (React + Vite + Tailwind)
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/         # Navbar, Footer
+│   │   │   ├── customer/       # ProductCard, BestDealComparison, SmartSavingsAlert
+│   │   │   ├── vendor/         # VendorSidebar
+│   │   │   └── admin/          # AdminSidebar
+│   │   ├── context/            # AuthContext, CartContext, WishlistContext, ToastContext
+│   │   ├── pages/              # Home, Products, ProductDetail, Cart, Checkout, Orders,
+│   │   │                       # OrderDetail, Wishlist, Login, Signup, NotFound
+│   │   │   ├── vendor/         # VendorDashboard, VendorProducts, VendorProductForm, VendorOrders
+│   │   │   └── admin/          # AdminDashboard, AdminVendors, AdminOrders, AdminReviews
+│   │   ├── services/api.ts     # Centralized API client
+│   │   ├── types/index.ts      # TypeScript interfaces
+│   │   ├── utils/formatters.ts # Currency (₹), date, and trust score formatting
+│   │   ├── App.tsx             # Route declarations and role-based guards
+│   │   └── main.tsx
+│   ├── vite.config.ts
+│   └── package.json
+│
+├── server/                     # Backend Application (Node.js + Express + Prisma)
+│   ├── prisma/
+│   │   ├── schema.prisma       # Active schema (SQLite local out-of-the-box)
+│   │   ├── schema.postgresql.prisma # PostgreSQL production schema
+│   │   └── seed.ts             # Rich realistic seed data (merchants, deals, reviews, coupons)
+│   ├── src/
+│   │   ├── controllers/        # Auth, Products, Deals, Cart, Orders, Vendors, Admin, Reviews...
+│   │   ├── middlewares/        # JWT verify, role guards, error handling
+│   │   ├── routes/             # Modular API route endpoints
+│   │   ├── services/           # TrustScore service, Smart Savings & Best Deal engine
+│   │   ├── utils/              # Prisma client, JWT helpers, response formatters
+│   │   └── index.ts            # Server entrypoint
+│   └── package.json
+│
+├── docker-compose.yml          # 1-Click PostgreSQL 16 & Adminer database setup
+├── package.json                # Root package with concurrent run scripts
+└── README.md
+```
+
+---
+
+## ⚡ Quick Setup & Running Locally
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm
+
+### 1. Clone & Install Dependencies
+
+```bash
+# Clone the repository
+git clone https://github.com/AnanyaAdvika/MultiVendor.git
+cd MultiVendor
+
+# Install dependencies for both server and client
+cd server && npm install
+cd ../client && npm install
+cd ..
+```
+
+### 2. Database Setup & Seeding
+
+The database is pre-configured with a local database so you can test it immediately without needing to install or run a separate database server.
+
+```bash
+# Inside /server directory
+cd server
+
+# Generate Prisma Client & push schema
+npx prisma generate
+npx prisma db push
+
+# Seed demo vendors, best deals, coupons, and sample orders
+npm run seed
+```
+
+### 3. Optional: Using PostgreSQL with Docker
+If you want to run with full PostgreSQL 16:
+```bash
+# In project root:
+docker-compose up -d
+
+# In server/.env set:
+DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/multivendor_db?schema=public"
+
+# Push schema:
+npx prisma db push --schema=prisma/schema.postgresql.prisma
+npm run seed
+```
+
+### 4. Start the Application
+
+You can start both frontend and backend concurrently or in separate terminals:
+
+**Terminal 1 (Backend Server):**
+```bash
+cd server
+npm run dev
+# Server runs on http://localhost:5000
+```
+
+**Terminal 2 (Frontend Client):**
+```bash
+cd client
+npm run dev
+# Vite runs on http://localhost:5173
+```
+
+Now open **http://localhost:5173** in your browser.
+
+---
+
+## 📡 REST API Endpoints Overview
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/auth/register` | Public | Register customer or vendor store |
+| **POST** | `/api/auth/login` | Public | Authenticate user & return JWT |
+| **GET** | `/api/auth/me` | Authenticated | Fetch current profile & roles |
+| **GET** | `/api/products` | Public | List products with search, vendor, category, eco filters |
+| **GET** | `/api/products/:slug` | Public | Product details & Best Deal comparison |
+| **GET** | `/api/deals/best-deals` | Public | Cross-vendor price comparison overview |
+| **GET** | `/api/cart` | Customer | Fetch cart grouped by vendor + Smart Savings analysis |
+| **POST** | `/api/cart/items` | Customer | Add product to cart |
+| **POST** | `/api/cart/switch-vendor`| Customer | 1-click switch item to cheaper vendor alternative |
+| **POST** | `/api/orders` | Customer | Checkout: splits order into vendor sub-orders |
+| **GET** | `/api/orders` | Customer | View customer order history & package tracking |
+| **GET** | `/api/orders/:id` | Customer/Vendor | Order breakdown & printable tax invoice |
+| **GET** | `/api/vendors/dashboard/analytics` | Vendor | Vendor revenue, trust score, fulfillment rates |
+| **GET** | `/api/vendors/dashboard/orders` | Vendor | View only their store's assigned sub-orders |
+| **PUT** | `/api/vendors/dashboard/orders/:id/status`| Vendor | Update sub-order (SHIPPED + tracking number) |
+| **GET** | `/api/admin/analytics` | Admin | Total platform sales, commission, users, orders |
+| **PUT** | `/api/admin/vendors/:id/status` | Admin | Approve or suspend vendor store |
+
+---
+
+## 📄 License
+This project is open-source and available under the MIT License.

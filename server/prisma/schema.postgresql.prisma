@@ -1,0 +1,283 @@
+// ==============================================================================
+// PRODUCTION POSTGRESQL SCHEMA FOR MULTI-VENDOR E-COMMERCE PLATFORM
+// To use with PostgreSQL:
+// 1. Run Docker: docker-compose up -d
+//    or provide your PostgreSQL connection string in .env:
+//    DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/multivendor_db?schema=public"
+// 2. Run: npx prisma db push --schema=prisma/schema.postgresql.prisma
+// ==============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  role      String   @default("CUSTOMER") // CUSTOMER, VENDOR, ADMIN
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor    Vendor?
+  cart      Cart?
+  orders    Order[]
+  reviews   Review[]
+  wishlist  Wishlist[]
+  addresses Address[]
+}
+
+model Vendor {
+  id                     String        @id @default(uuid())
+  userId                 String        @unique
+  storeName              String
+  slug                   String        @unique
+  description            String?
+  logo                   String?
+  banner                 String?
+  phone                  String?
+  address                String?
+  status                 String        @default("PENDING") // PENDING, APPROVED, REJECTED
+  trustScore             Float         @default(85.0)
+  rating                 Float         @default(4.5)
+  totalReviews           Int           @default(0)
+  successfulOrders       Int           @default(0)
+  cancelledOrders        Int           @default(0)
+  onTimeDeliveries       Int           @default(0)
+  isEcoFriendlyCertified Boolean       @default(false)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products     Product[]
+  vendorOrders VendorOrder[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id              String      @id @default(uuid())
+  vendorId        String
+  categoryId      String
+  title           String
+  slug            String
+  description     String
+  price           Float
+  compareAtPrice  Float?
+  discountPercent Float       @default(0)
+  stock           Int         @default(0)
+  images          String      // JSON string array of image URLs
+  sku             String?     // Stock Keeping Unit
+  catalogGroup    String?     // Used to match same items across different vendors for "Best Deal" comparison
+  isEcoFriendly   Boolean     @default(false)
+  ecoDetails      String?
+  rating          Float       @default(0)
+  numReviews      Int         @default(0)
+  isActive        Boolean     @default(true)
+  isFeatured      Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  vendor     Vendor      @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  category   Category    @relation(fields: [categoryId], references: [id])
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  reviews    Review[]
+  wishlist   Wishlist[]
+
+  @@index([vendorId])
+  @@index([categoryId])
+  @@index([catalogGroup])
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id            String        @id @default(uuid())
+  orderNumber   String        @unique
+  userId        String
+  addressId     String?
+  subtotal      Float
+  discount      Float         @default(0)
+  couponCode    String?
+  tax           Float         @default(0)
+  shippingFee   Float         @default(0)
+  totalAmount   Float
+  paymentStatus String        @default("PENDING") // PENDING, PAID, FAILED
+  paymentMethod String        @default("COD")     // COD, CARD, UPI
+  orderStatus   String        @default("PLACED")  // PLACED, PROCESSING, PARTIALLY_SHIPPED, SHIPPED, DELIVERED, CANCELLED
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  address      Address?      @relation(fields: [addressId], references: [id])
+  vendorOrders VendorOrder[]
+  orderItems   OrderItem[]
+  payment      Payment?
+
+  @@index([userId])
+}
+
+model VendorOrder {
+  id              String      @id @default(uuid())
+  orderId         String
+  vendorId        String
+  subtotal        Float
+  shippingFee     Float       @default(0)
+  commission      Float       @default(0)
+  vendorEarnings  Float       @default(0)
+  status          String      @default("PENDING") // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  trackingNumber  String?
+  shippingCarrier String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  order      Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  vendor     Vendor      @relation(fields: [vendorId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([orderId])
+  @@index([vendorId])
+}
+
+model OrderItem {
+  id            String       @id @default(uuid())
+  orderId       String
+  vendorOrderId String?
+  productId     String
+  vendorId      String
+  title         String
+  price         Float
+  quantity      Int
+  subtotal      Float
+  image         String?
+  isEcoFriendly Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  vendorOrder VendorOrder? @relation(fields: [vendorOrderId], references: [id])
+  product     Product      @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([vendorOrderId])
+  @@index([productId])
+  @@index([vendorId])
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  orderId       String   @unique
+  amount        Float
+  provider      String   // STRIPE, UPI, COD
+  transactionId String?
+  status        String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  fullName   String
+  phone      String
+  street     String
+  city       String
+  state      String
+  postalCode String
+  country    String   @default("India")
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@index([userId])
+}
+
+model Coupon {
+  id             String    @id @default(uuid())
+  code           String    @unique
+  description    String?
+  discountType   String    // PERCENTAGE, FIXED
+  discountValue  Float
+  minOrderAmount Float     @default(0)
+  maxDiscount    Float?
+  isActive       Boolean   @default(true)
+  isEcoOnly      Boolean   @default(false) // Gives extra savings for eco-friendly carts
+  validUntil     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
