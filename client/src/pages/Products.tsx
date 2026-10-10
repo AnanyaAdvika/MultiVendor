@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Filter, SlidersHorizontal, Leaf, X, RotateCcw } from 'lucide-react';
+import { Filter, SlidersHorizontal, Leaf, X, RotateCcw, ArrowLeftRight } from 'lucide-react';
 import { Product, Category, Vendor } from '../types/index.js';
 import { api } from '../services/api.js';
 import { ProductCard } from '../components/customer/ProductCard.js';
@@ -12,6 +12,15 @@ export function Products() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [compareProducts, setCompareProducts] = useState<Product[]>([]);
+
+  const toggleCompare = (product: Product) => {
+    setCompareProducts((current) => {
+      if (current.some((item) => item.id === product.id)) return current.filter((item) => item.id !== product.id);
+      if (current.length >= 3) return current;
+      return [...current, product];
+    });
+  };
 
   // Filter states
   const search = searchParams.get('search') || '';
@@ -240,6 +249,34 @@ export function Products() {
 
         {/* Product Grid Area */}
         <main className="md:col-span-3">
+          {compareProducts.length > 0 && (
+            <section className="mb-6 rounded-2xl border border-[#e3d2c0] bg-[#f5ede4] p-4 sm:p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-[#3b2a20]">Compare your shortlist</h2>
+                  <p className="text-xs text-[#806b5a] mt-1">Select up to 3 listings to compare price, seller and ratings side by side.</p>
+                </div>
+                <button onClick={() => setCompareProducts([])} className="inline-flex items-center gap-1 rounded-full border border-[#d7c2ad] px-3 py-1.5 text-xs font-semibold text-[#72513b] hover:bg-white"><X className="h-3 w-3" /> Clear</button>
+              </div>
+              <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${compareProducts.length}, minmax(0, 1fr))` }}>
+                {compareProducts.map((item) => (
+                  <div key={item.id} className="min-w-0 rounded-xl border border-[#e8dbce] bg-white p-3">
+                    <img src={item.images?.[0]} alt={item.title} className="mb-3 aspect-square w-full rounded-lg object-cover bg-[#f6f0e9]" />
+                    <p className="line-clamp-2 min-h-9 text-xs font-semibold text-[#3b2a20]">{item.title}</p>
+                    <p className="mt-2 text-lg font-bold text-[#3b2a20]">₹{item.price.toLocaleString('en-IN')}</p>
+                    <div className="mt-3 space-y-2 border-t border-[#f0e7de] pt-3 text-[11px] text-[#725f50]">
+                      <p><span className="font-semibold text-[#4a3428]">Seller:</span> {item.vendor.storeName}</p>
+                      <p><span className="font-semibold text-[#4a3428]">Rating:</span> {item.rating.toFixed(1)} / 5 ({item.numReviews})</p>
+                      <p><span className="font-semibold text-[#4a3428]">Stock:</span> {item.stock > 0 ? 'In stock' : 'Unavailable'}</p>
+                      <p><span className="font-semibold text-[#4a3428]">Category:</span> {item.category.name}</p>
+                    </div>
+                    <button onClick={() => toggleCompare(item)} className="mt-3 text-[11px] font-semibold text-[#8a6042] hover:underline">Remove</button>
+                  </div>
+                ))}
+                {compareProducts.length < 3 && <button onClick={() => document.getElementById('catalog-products')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="flex min-h-36 items-center justify-center rounded-xl border border-dashed border-[#cdb8a4] bg-white/60 p-3 text-center text-xs text-[#806b5a]">Choose another product below</button>}
+              </div>
+            </section>
+          )}
           {/* Active Filter Tags */}
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2 mb-6">
@@ -294,9 +331,9 @@ export function Products() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div id="catalog-products" className="grid grid-cols-2 sm:grid-cols-3 gap-6">
               {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={p.id} product={p} onToggleCompare={toggleCompare} isCompared={compareProducts.some((item) => item.id === p.id)} />
               ))}
             </div>
           )}
