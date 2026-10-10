@@ -1,4 +1,15 @@
-const BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '/api';
+const configuredApiUrl = String((import.meta as any).env?.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+const isProduction = Boolean((import.meta as any).env?.PROD);
+
+// A relative "/api" works with the local Vite proxy, but on Vercel the
+// storefront and API are separate projects. Never send production API calls
+// to the static storefront's index.html rewrite.
+const BASE_URL =
+  configuredApiUrl && configuredApiUrl !== '/api'
+    ? (configuredApiUrl.endsWith('/api') ? configuredApiUrl : `${configuredApiUrl}/api`)
+    : isProduction
+      ? 'https://multi-vendor-chi.vercel.app/api'
+      : '/api';
 
 function getToken(): string | null {
   return localStorage.getItem('token');
@@ -6,17 +17,31 @@ function getToken(): string | null {
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers || {});
-  headers.set('Content-Type', 'application/json');
+  if (!headers.has('Content-Type') && options.body) {
+    headers.set('Content-Type', 'application/json');
+  }
 
   const token = getToken();
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
+  } catch {
+    throw new Error(`Cannot connect to the marketplace API at ${BASE_URL}. Check that the backend deployment is available.`);
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error(
+      `The API returned a non-JSON response (${response.status}) from ${BASE_URL}. Check the backend deployment and API URL.`,
+    );
+  }
 
   const data = await response.json();
 
@@ -54,8 +79,7 @@ export const api = {
     request<any>('/cart/items', { method: 'POST', body: JSON.stringify({ productId, quantity }) }),
   updateCartQty: (itemId: string, quantity: number) =>
     request<any>(`/cart/items/${itemId}`, { method: 'PUT', body: JSON.stringify({ quantity }) }),
-  removeCartItem: (itemId: string) =>
-    request<any>(`/cart/items/${itemId}`, { method: 'DELETE' }),
+  removeCartItem: (itemId: string) => request<any>(`/cart/items/${itemId}`, { method: 'DELETE' }),
   clearCart: () => request<any>('/cart', { method: 'DELETE' }),
   switchVendor: (cartItemId: string, targetProductId: string) =>
     request<any>('/cart/switch-vendor', { method: 'POST', body: JSON.stringify({ cartItemId, targetProductId }) }),
@@ -112,7 +136,7 @@ export const api = {
   getAdminAnalytics: () => request<any>('/admin/analytics'),
   getAdminVendors: () => request<any>('/admin/vendors'),
   updateVendorStatus: (id: string, status: string) =>
-    request<any>(`/admin/vendors/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
+    request<any>(`/admin/vendors/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
   getAdminCustomers: () => request<any>('/admin/customers'),
   toggleCustomerStatus: (id: string) =>
     request<any>(`/admin/customers/${id}/status`, { method: 'PUT' }),
