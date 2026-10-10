@@ -93,12 +93,12 @@ export function Products() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
             {selectedCategory ? `${categories.find((c) => c.slug === selectedCategory)?.name || 'Category'} Catalog` : 'Marketplace Products'}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-stone-500 mt-1">
             Showing {products.length} products from verified vendors
           </p>
         </div>
@@ -107,17 +107,17 @@ export function Products() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-            className="md:hidden flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-white border border-slate-200 rounded-xl"
+            className="md:hidden flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-white border border-stone-200 rounded-xl"
           >
-            <SlidersHorizontal className="w-4 h-4 text-slate-600" /> Filters
+            <SlidersHorizontal className="w-4 h-4 text-stone-600" /> Filters
           </button>
 
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-slate-500 hidden sm:inline">Sort by:</label>
+            <label className="text-xs font-semibold text-stone-500 hidden sm:inline">Sort by:</label>
             <select
               value={sort}
               onChange={(e) => updateFilter('sort', e.target.value)}
-              className="text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="text-xs font-semibold bg-white border border-stone-200 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#b99373]"
             >
               <option value="newest">Newest Arrivals</option>
               <option value="price_asc">Price: Low to High</option>
@@ -133,10 +133,10 @@ export function Products() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mt-8">
         {/* Filters Sidebar */}
         <aside className={`md:block space-y-6 ${mobileFilterOpen ? 'block' : 'hidden md:block'}`}>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-6 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <span className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
-                <Filter className="w-4 h-4 text-indigo-600" /> Filter Catalog
+          <div className="bg-white rounded-2xl border border-stone-200 p-5 space-y-6 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <span className="font-bold text-sm text-stone-900 flex items-center gap-1.5">
+                <Filter className="w-4 h-4 text-[#79563e]" /> Filter Catalog
               </span>
               {hasActiveFilters && (
                 <button
@@ -166,12 +166,12 @@ export function Products() {
 
             {/* Categories */}
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2.5">Category</h4>
+              <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-2.5">Category</h4>
               <div className="space-y-1.5 text-xs">
                 <button
                   onClick={() => updateFilter('category', null)}
                   className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-colors ${
-                    !selectedCategory ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-600 hover:bg-slate-50'
+                    !selectedCategory ? 'bg-[#f1e7dc] text-[#654735] font-bold' : 'text-stone-600 hover:bg-stone-50'
                   }`}
                 >
                   All Categories
@@ -182,13 +182,13 @@ export function Products() {
                     onClick={() => updateFilter('category', cat.slug)}
                     className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-colors flex items-center justify-between ${
                       selectedCategory === cat.slug
-                        ? 'bg-indigo-50 text-indigo-700 font-bold'
-                        : 'text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#f1e7dc] text-[#654735] font-bold'
+                        : 'text-stone-600 hover:bg-stone-50'
                     }`}
                   >
                     <span>{cat.name}</span>
                     {cat._count?.products !== undefined && (
-                      <span className="text-[10px] text-slate-400 font-semibold">{cat._count.products}</span>
+                      <span className="text-[10px] text-stone-400 font-semibold">{cat._count.products}</span>
                     )}
                   </button>
                 ))}
@@ -197,12 +197,12 @@ export function Products() {
 
             {/* Vendors Filter */}
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2.5">Verified Vendors</h4>
+              <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-2.5">Verified Vendors</h4>
               <div className="space-y-1.5 text-xs max-h-48 overflow-y-auto">
                 <button
                   onClick={() => updateFilter('vendor', null)}
                   className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-colors ${
-                    !selectedVendor ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-600 hover:bg-slate-50'
+                    !selectedVendor ? 'bg-[#f1e7dc] text-[#654735] font-bold' : 'text-stone-600 hover:bg-stone-50'
                   }`}
                 >
                   All Sellers
@@ -213,8 +213,8 @@ export function Products() {
                     onClick={() => updateFilter('vendor', vend.slug)}
                     className={`w-full text-left px-2.5 py-1.5 rounded-lg transition-colors flex items-center justify-between ${
                       selectedVendor === vend.slug
-                        ? 'bg-indigo-50 text-indigo-700 font-bold'
-                        : 'text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#f1e7dc] text-[#654735] font-bold'
+                        : 'text-stone-600 hover:bg-stone-50'
                     }`}
                   >
                     <span className="truncate mr-1">{vend.storeName}</span>
@@ -226,21 +226,21 @@ export function Products() {
 
             {/* Price Filter */}
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2.5">Price Range (₹)</h4>
+              <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider mb-2.5">Price Range (₹)</h4>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <input
                   type="number"
                   placeholder="Min"
                   value={minPrice}
                   onChange={(e) => updateFilter('minPrice', e.target.value || null)}
-                  className="px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="px-2.5 py-1.5 border border-stone-200 rounded-lg text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#b99373]"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={maxPrice}
                   onChange={(e) => updateFilter('maxPrice', e.target.value || null)}
-                  className="px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="px-2.5 py-1.5 border border-stone-200 rounded-lg text-stone-800 focus:outline-none focus:ring-1 focus:ring-[#b99373]"
                 />
               </div>
             </div>
@@ -280,21 +280,21 @@ export function Products() {
           {/* Active Filter Tags */}
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2 mb-6">
-              <span className="text-xs text-slate-400 font-medium">Active filters:</span>
+              <span className="text-xs text-stone-400 font-medium">Active filters:</span>
               {search && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-stone-100 text-stone-700">
                   Keyword: "{search}"
                   <button onClick={() => updateFilter('search', null)}><X className="w-3 h-3" /></button>
                 </span>
               )}
               {selectedCategory && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#f1e7dc] text-[#654735]">
                   Category: {selectedCategory}
                   <button onClick={() => updateFilter('category', null)}><X className="w-3 h-3" /></button>
                 </span>
               )}
               {selectedVendor && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#f1e7dc] text-[#654735]">
                   Seller: {selectedVendor}
                   <button onClick={() => updateFilter('vendor', null)}><X className="w-3 h-3" /></button>
                 </span>
@@ -311,21 +311,21 @@ export function Products() {
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="aspect-square bg-slate-100 rounded-2xl animate-pulse"></div>
+                <div key={i} className="aspect-square bg-stone-100 rounded-2xl animate-pulse"></div>
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 mx-auto flex items-center justify-center">
+            <div className="text-center py-16 bg-white rounded-3xl border border-stone-200 p-8 space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-[#f1e7dc] text-amber-500 mx-auto flex items-center justify-center">
                 <SlidersHorizontal className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-slate-800">No matching products found</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <h3 className="text-lg font-bold text-stone-800">No matching products found</h3>
+              <p className="text-xs text-stone-500 max-w-sm mx-auto">
                 Try loosening your filters or search terms to see products across our multi-vendor catalog.
               </p>
               <button
                 onClick={clearAllFilters}
-                className="px-4 py-2 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-sm hover:bg-indigo-700"
+                className="px-4 py-2 bg-[#4a3428] text-white font-bold text-xs rounded-xl shadow-sm hover:bg-[#634735]"
               >
                 Clear All Filters
               </button>
