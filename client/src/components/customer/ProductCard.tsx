@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Heart, Star, Leaf, ShieldCheck, Sparkles } from 'lucide-react';
+import { ShoppingBag, Heart, Star, Leaf, ShieldCheck, Sparkles, ArrowLeftRight } from 'lucide-react';
 import { Product } from '../../types/index.js';
 import { formatCurrency, getTrustBadge } from '../../utils/formatters.js';
 import { useCart } from '../../context/CartContext.js';
@@ -8,9 +8,11 @@ import { useWishlist } from '../../context/WishlistContext.js';
 
 interface ProductCardProps {
   product: Product;
+  onToggleCompare?: (product: Product) => void;
+  isCompared?: boolean;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, onToggleCompare, isCompared = false }: ProductCardProps) {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
@@ -63,6 +65,12 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
         </div>
+
+        {onToggleCompare && (
+          <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleCompare(product); }} className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[10px] font-bold shadow-sm backdrop-blur-md ${isCompared ? 'border-[#6d7b59] bg-[#e7eddf] text-[#4f6040]' : 'border-[#e4d8cb] bg-white/90 text-[#6b5140] hover:bg-[#f4e9dd]'}`} aria-pressed={isCompared}>
+            <ArrowLeftRight className="h-3 w-3" /> {isCompared ? 'Added to compare' : 'Compare'}
+          </button>
+        )}
 
         {/* Wishlist Button */}
         <button
