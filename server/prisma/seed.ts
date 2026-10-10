@@ -201,7 +201,7 @@ async function main() {
   } });
   const catStationery = await prisma.category.create({ data: {
     name: 'Stationery & Office', slug: 'stationery-office', description: 'Pens, paper, desk tools and study essentials.',
-    image: 'https://images.unsplash.com/photo-1455390582262-044cstage?auto=format&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80',
   } });
   const catKitchenware = await prisma.category.create({ data: {
     name: 'Kitchen & Dining', slug: 'kitchen-dining', description: 'Thoughtful kitchen tools, tableware and storage.',
