@@ -548,7 +548,6 @@ async function main() {
       const price = group.base + ((itemIndex * 137 + groupIndex * 83) % Math.max(180, group.base * 4));
       const compareAtPrice = Math.round(price * (1.12 + ((itemIndex + groupIndex) % 4) * 0.06));
       const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + groupIndex + '-' + itemIndex;
-      const eco = /bamboo|reusable|refillable|organic|cotton|silicone|stainless steel/i.test(title) && groupIndex === 0;
       await prisma.product.create({ data: {
         vendorId: [vendor1.id, vendor2.id, vendor3.id][(groupIndex + itemIndex) % 3],
         categoryId: group.category.id,
