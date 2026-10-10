@@ -181,6 +181,49 @@ async function main() {
     },
   });
 
+
+  // Expanded everyday-shopping categories for the demo catalog.
+  const catHomeDecor = await prisma.category.create({ data: {
+    name: 'Home Decor', slug: 'home-decor', description: 'Warm, considered pieces for calm and personal spaces.',
+    image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catPantry = await prisma.category.create({ data: {
+    name: 'Pantry & Food', slug: 'pantry-food', description: 'Pantry staples, snacks, breakfast and everyday groceries.',
+    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catPersonalCare = await prisma.category.create({ data: {
+    name: 'Toiletries & Personal Care', slug: 'personal-care', description: 'Everyday grooming, bath and personal-care essentials.',
+    image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catCleaning = await prisma.category.create({ data: {
+    name: 'Cleaning & Laundry', slug: 'cleaning-laundry', description: 'Useful basics for a cleaner, more organised home.',
+    image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catStationery = await prisma.category.create({ data: {
+    name: 'Stationery & Office', slug: 'stationery-office', description: 'Pens, paper, desk tools and study essentials.',
+    image: 'https://images.unsplash.com/photo-1455390582262-044cstage?auto=format&fit=crop&q=80',
+  } });
+  const catKitchenware = await prisma.category.create({ data: {
+    name: 'Kitchen & Dining', slug: 'kitchen-dining', description: 'Thoughtful kitchen tools, tableware and storage.',
+    image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catTechAccessories = await prisma.category.create({ data: {
+    name: 'Tech Accessories', slug: 'tech-accessories', description: 'Cables, chargers, stands and everyday tech add-ons.',
+    image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catFitness = await prisma.category.create({ data: {
+    name: 'Fitness & Wellness', slug: 'fitness-wellness', description: 'Simple gear for movement, recovery and everyday wellbeing.',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catFashion = await prisma.category.create({ data: {
+    name: 'Fashion & Accessories', slug: 'fashion-accessories', description: 'Easy everyday accessories and wardrobe basics.',
+    image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&auto=format&fit=crop&q=80',
+  } });
+  const catPet = await prisma.category.create({ data: {
+    name: 'Pet Care & Toys', slug: 'pet-care', description: 'Useful supplies and enrichment for four-legged friends.',
+    image: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=700&auto=format&fit=crop&q=80',
+  } });
+
   // 4. Create Products
   // Best Deal Group 1: Sony WH-1000XM5
   // Vendor 1 sells for ₹26,990. Vendor 2 sells for ₹24,990 (Cheaper by ₹2,000!)
@@ -436,6 +479,99 @@ async function main() {
       isFeatured: true,
     },
   });
+
+
+  // 4b. Add 150 varied demo products across ten everyday-shopping categories.
+  // These are sample catalog listings for local/demo use, not live supplier inventory.
+  const expandedCatalog = [
+    { category: catHomeDecor, base: 249, image: 'photo-1616486338812-3dadae4b4ace', items: [
+      'Linen Cushion Cover Set of 2','Textured Ceramic Bud Vase','Minimal Table Lamp','Cotton Throw Blanket','Framed Botanical Wall Art',
+      'Rattan Storage Basket','Scented Soy Candle','Stoneware Planter Pot','Woven Table Runner','Abstract Desk Sculpture',
+      'Soft Cotton Area Rug','Wall-Mounted Key Holder','Glass Flower Vase','Decorative Mirror Tray','Warm LED Fairy Lights'
+    ]},
+    { category: catPantry, base: 59, image: 'photo-1542838132-92c53300491e', items: [
+      'Rolled Oats 500 g','Whole Wheat Pasta 500 g','Roasted Makhana 100 g','Peanut Butter 340 g','Dark Chocolate 70% 100 g',
+      'Masala Chai Tea Bags 25 count','Basmati Rice 1 kg','Mixed Nuts 200 g','Granola Breakfast Mix 400 g','Organic Jaggery Powder 500 g',
+      'Instant Coffee 100 g','Chickpeas 500 g','Multigrain Crackers 200 g','Cocoa Powder 100 g','Dried Cranberries 150 g'
+    ]},
+    { category: catPersonalCare, base: 79, image: 'photo-1608248543803-ba4f8c70ae0b', items: [
+      'Daily Hydrating Face Wash 100 ml','Gentle Body Wash 250 ml','Moisturising Hand Cream 75 ml','Aloe Vera Body Lotion 200 ml','Mint Toothpaste Twin Pack',
+      'Soft Bristle Toothbrush Set of 4','Fluoride Mouthwash 250 ml','Rose Water Toner 100 ml','Lip Balm Duo','Nourishing Hair Conditioner 180 ml',
+      'Everyday Shampoo 200 ml','Sunscreen SPF 50 50 g','Cotton Face Towels Set of 3','Bamboo Hair Brush','Gentle Makeup Remover 100 ml'
+    ]},
+    { category: catCleaning, base: 69, image: 'photo-1585421514284-efb74c2b69ba', items: [
+      'Concentrated Dishwash Liquid 500 ml','Laundry Detergent 1 kg','Microfiber Cleaning Cloth Set','Multi-Surface Cleaner 500 ml','Reusable Kitchen Sponge Set',
+      'Toilet Cleaning Gel 500 ml','Fabric Freshener 250 ml','Lint Roller with 2 Refills','Floor Cleaner 1 L','Dish Scrub Brush',
+      'Garbage Bags Medium 30 count','Glass Cleaner Spray 500 ml','Laundry Mesh Wash Bags Set','Rubber Cleaning Gloves','Drain Freshener Blocks'
+    ]},
+    { category: catStationery, base: 29, image: 'photo-1455390582262-044cstage', items: [
+      'Hardcover Ruled Notebook A5','Pastel Highlighter Set of 6','Black Gel Pens Pack of 5','Mechanical Pencil 0.5 mm','Weekly Desk Planner',
+      'Sticky Notes Multi-Pack','Fine-Liner Pen Set of 10','Document Folder Set of 3','Grid Journal A5','Desk Organiser Tray',
+      'Watercolour Pencils Set of 12','Correction Tape Twin Pack','Index Tabs Set','Minimalist Bookmark Set','Study Flash Cards Pack'
+    ]},
+    { category: catKitchenware, base: 99, image: 'photo-1556911220-bff31c812dba', items: [
+      'Glass Food Storage Set of 3','Stainless Steel Water Bottle 750 ml','Ceramic Mug Pair','Silicone Spatula Set','Bamboo Cutting Board',
+      'Measuring Cup and Spoon Set','Cotton Kitchen Towel Set','Airtight Pantry Jar Set','Stainless Steel Lunch Box','Oil Dispenser Bottle',
+      'Manual Citrus Juicer','Reusable Food Wrap Set','Minimal Dinner Plate Set of 2','Tea Infuser with Mug','Stackable Fridge Organiser'
+    ]},
+    { category: catTechAccessories, base: 149, image: 'photo-1498049794561-7780e7231661', items: [
+      'Braided USB-C Cable 2 m','65 W USB-C Wall Charger','Adjustable Laptop Stand','Foldable Phone Stand','Wireless Mouse',
+      'Compact Bluetooth Keyboard','Laptop Sleeve 14 inch','USB-C Multiport Hub','Cable Organiser Clips','Screen Cleaning Kit',
+      'Magnetic Charging Cable','Webcam Privacy Cover Set','Universal Travel Adapter','Desk Headphone Stand','Portable SSD Case'
+    ]},
+    { category: catFitness, base: 199, image: 'photo-1517836357463-d25dfeac3438', items: [
+      'Resistance Bands Set of 5','Yoga Mat 6 mm','Stainless Steel Shaker Bottle','Foam Roller 30 cm','Jump Rope Adjustable',
+      'Cotton Gym Towel','Ankle Weights Pair 1 kg','Yoga Block Pair','Grip Strength Trainer','Running Waist Belt',
+      'Stretching Strap','Massage Ball Duo','Lightweight Sports Water Bottle','Workout Log Notebook','Cooling Microfiber Towel'
+    ]},
+    { category: catFashion, base: 129, image: 'photo-1483985988355-763728e1935b', items: [
+      'Everyday Canvas Tote Bag','Minimal Gold-Tone Hoop Earrings','Cotton Crew Socks 3-Pack','Classic Baseball Cap','Slim Card Holder',
+      'Soft Knit Beanie','Everyday Hair Claw Clip Set','Neutral Cotton Scarf','Adjustable Fabric Belt','Compact Travel Jewellery Case',
+      'Canvas Pencil Pouch','Classic Sunglasses','Foldable Shopping Bag','Minimal Pendant Necklace','Everyday Crossbody Pouch'
+    ]},
+    { category: catPet, base: 89, image: 'photo-1450778869180-41d0601e046e', items: [
+      'Rope Tug Dog Toy','Cat Teaser Wand','Stainless Steel Pet Bowl','Soft Pet Grooming Brush','Training Treat Pouch',
+      'Catnip Plush Mouse Set','Pet Waste Bag Rolls','Adjustable Pet Collar','Slow Feeder Bowl','Washable Pet Blanket',
+      'Lint Remover for Pet Hair','Rubber Fetch Ball Set','Pet Shampoo 250 ml','Collapsible Travel Water Bowl','Interactive Treat Puzzle'
+    ]},
+    { category: catHome, base: 149, image: 'photo-1556911220-e15b29be8c8f', items: [
+      'Non-Stick Frying Pan 24 cm','Compact Electric Kettle 1.5 L','Stainless Steel Tongs','Stackable Storage Containers','Manual Vegetable Chopper',
+      'Reusable Silicone Baking Mat','Insulated Lunch Tote','Dish Drying Rack','Digital Kitchen Scale','French Press Coffee Maker',
+      'Cotton Apron with Pockets','Spice Jar Set of 6','Over-Sink Colander','Reusable Ice Cube Tray','Compact Sandwich Maker'
+    ]},
+  ];
+  let addedCatalogCount = 0;
+  for (let groupIndex = 0; groupIndex < expandedCatalog.length; groupIndex++) {
+    const group = expandedCatalog[groupIndex];
+    for (let itemIndex = 0; itemIndex < group.items.length; itemIndex++) {
+      const title = group.items[itemIndex];
+      const price = group.base + ((itemIndex * 137 + groupIndex * 83) % Math.max(180, group.base * 4));
+      const compareAtPrice = Math.round(price * (1.12 + ((itemIndex + groupIndex) % 4) * 0.06));
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + groupIndex + '-' + itemIndex;
+      const eco = /bamboo|reusable|refillable|organic|cotton|silicone|stainless steel/i.test(title) && groupIndex === 0;
+      await prisma.product.create({ data: {
+        vendorId: [vendor1.id, vendor2.id, vendor3.id][(groupIndex + itemIndex) % 3],
+        categoryId: group.category.id,
+        title,
+        slug,
+        description: `${title} — a practical everyday pick selected for quality, useful design and easy daily use. Check the product details and seller information before ordering.`,
+        price,
+        compareAtPrice,
+        discountPercent: Math.round((1 - price / compareAtPrice) * 100),
+        stock: 8 + ((groupIndex * 11 + itemIndex * 7) % 73),
+        images: JSON.stringify([`https://images.unsplash.com/${group.image}?w=800&auto=format&fit=crop&q=80`]),
+        sku: `NX-${String(groupIndex + 1).padStart(2, '0')}-${String(itemIndex + 1).padStart(3, '0')}`,
+        catalogGroup: null,
+        isEcoFriendly: false,
+        rating: Number((4.1 + ((groupIndex + itemIndex) % 9) / 10).toFixed(1)),
+        numReviews: (groupIndex * 7 + itemIndex * 3) % 38,
+        isActive: true,
+        isFeatured: itemIndex < 2 && groupIndex < 5,
+      }});
+      addedCatalogCount++;
+    }
+  }
+  console.log(`🛍️ Added ${addedCatalogCount} expanded demo products across ${expandedCatalog.length} categories.`);
 
   // 5. Create Customer Address
   const customerAddress = await prisma.address.create({
