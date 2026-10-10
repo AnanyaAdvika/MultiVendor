@@ -1,4 +1,4 @@
-const BASE_URL = '/api';
+const BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '/api';
 
 function getToken(): string | null {
   return localStorage.getItem('token');
@@ -79,6 +79,7 @@ export const api = {
   addReview: (productId: string, rating: number, comment: string) =>
     request<any>('/reviews', { method: 'POST', body: JSON.stringify({ productId, rating, comment }) }),
   getProductReviews: (productId: string) => request<any>(`/reviews/product/${productId}`),
+  checkReviewEligibility: (productId: string) => request<any>(`/reviews/eligibility/${productId}`),
 
   // Addresses
   getAddresses: () => request<any>('/addresses'),

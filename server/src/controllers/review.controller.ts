@@ -24,22 +24,38 @@ export async function addReview(req: AuthenticatedRequest, res: Response) {
 
     if (!product) return sendError(res, 'Product not found', 404);
 
-    // Reviews are restricted to customers with a delivered vendor sub-order for this exact product.
-    const deliveredPurchase = await prisma.orderItem.findFirst({
+    // 1. Check if user already reviewed this product (duplicate prevention)
+    const existingReview = await prisma.review.findFirst({
       where: {
+        userId: req.user.id,
         productId,
-        order: { userId: req.user.id },
-        vendorOrder: { status: 'DELIVERED' },
       },
-      select: { id: true },
     });
-    if (!deliveredPurchase) {
-      return sendError(res, 'Only customers with a delivered order for this product can review it', 403);
+
+    if (existingReview) {
+      return sendError(res, 'You have already reviewed this product', 400);
     }
 
-    const existingReview = await prisma.review.findFirst({ where: { userId: req.user.id, productId }, select: { id: true } });
-    if (existingReview) {
-      return sendError(res, 'You have already reviewed this product', 409);
+    // 2. Validate that the user has a DELIVERED order containing this product
+    const deliveredItem = await prisma.orderItem.findFirst({
+      where: {
+        productId,
+        order: {
+          userId: req.user.id,
+        },
+        OR: [
+          { order: { orderStatus: 'DELIVERED' } },
+          { vendorOrder: { status: 'DELIVERED' } },
+        ],
+      },
+    });
+
+    if (!deliveredItem) {
+      return sendError(
+        res,
+        'Only customers who have received this product (DELIVERED status) can submit a review',
+        403
+      );
     }
 
     const review = await prisma.review.create({
@@ -115,6 +131,41 @@ export async function getProductReviews(req: any, res: Response) {
     });
 
     return sendSuccess(res, reviews);
+  } catch (error: any) {
+    return sendError(res, error.message, 500);
+  }
+}
+
+export async function checkReviewEligibility(req: AuthenticatedRequest, res: Response) {
+  try {
+    if (!req.user) return sendError(res, 'Unauthorized', 401);
+    const { productId } = req.params;
+
+    const existingReview = await prisma.review.findFirst({
+      where: {
+        userId: req.user.id,
+        productId,
+      },
+    });
+
+    const deliveredItem = await prisma.orderItem.findFirst({
+      where: {
+        productId,
+        order: {
+          userId: req.user.id,
+        },
+        OR: [
+          { order: { orderStatus: 'DELIVERED' } },
+          { vendorOrder: { status: 'DELIVERED' } },
+        ],
+      },
+    });
+
+    return sendSuccess(res, {
+      canReview: Boolean(deliveredItem && !existingReview),
+      hasDeliveredOrder: Boolean(deliveredItem),
+      alreadyReviewed: Boolean(existingReview),
+    });
   } catch (error: any) {
     return sendError(res, error.message, 500);
   }

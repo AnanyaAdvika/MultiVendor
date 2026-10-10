@@ -11,6 +11,8 @@ import {
   Sparkles,
   ArrowRight,
   MessageSquare,
+  BarChart2,
+  Bell,
   BellRing,
 } from 'lucide-react';
 import { Product } from '../types/index.js';
@@ -20,6 +22,8 @@ import { useCart } from '../context/CartContext.js';
 import { useWishlist } from '../context/WishlistContext.js';
 import { useAuth } from '../context/AuthContext.js';
 import { useToast } from '../context/ToastContext.js';
+import { useComparison } from '../context/ComparisonContext.js';
+import { usePriceWatch } from '../context/PriceWatchContext.js';
 import { BestDealComparison } from '../components/customer/BestDealComparison.js';
 
 export function ProductDetail() {
@@ -29,18 +33,27 @@ export function ProductDetail() {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { user } = useAuth();
   const { success, error } = useToast();
+  const { addToCompare, isCompared } = useComparison();
+  const { setPriceWatch, removePriceWatch, isWatching, getWatchTarget } = usePriceWatch();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  // Price Watch Modal / Input State
+  const [showPriceWatchModal, setShowPriceWatchModal] = useState(false);
+  const [targetPriceInput, setTargetPriceInput] = useState<string>('');
+
   // Review Form
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
-  const [priceTarget, setPriceTarget] = useState('');
-  const [priceWatchSaved, setPriceWatchSaved] = useState(false);
+  const [reviewEligibility, setReviewEligibility] = useState<{
+    canReview: boolean;
+    hasDeliveredOrder: boolean;
+    alreadyReviewed: boolean;
+  } | null>(null);
 
   useEffect(() => {
     async function loadProduct() {
@@ -62,43 +75,20 @@ export function ProductDetail() {
   }, [slug]);
 
   useEffect(() => {
-    if (!product) return;
-    try {
-      const watches = JSON.parse(localStorage.getItem('nexstore-price-watches') || '[]') as Array<{ productId: string; targetPrice: number }>;
-      const watch = watches.find((item) => item.productId === product.id);
-      setPriceWatchSaved(Boolean(watch));
-      setPriceTarget(watch ? String(watch.targetPrice) : String(Math.max(1, Math.floor(product.price * 0.9))));
-      if (watch && product.price <= watch.targetPrice) success('Price watch update: this product is at or below your target price.');
-    } catch {
-      setPriceWatchSaved(false);
-      setPriceTarget(String(Math.max(1, Math.floor(product.price * 0.9))));
-    }
-  }, [product?.id]);
-
-  const handlePriceWatch = () => {
-    if (!product) return;
-    try {
-      const watches = JSON.parse(localStorage.getItem('nexstore-price-watches') || '[]') as Array<{ productId: string; productTitle: string; currentPrice: number; targetPrice: number; createdAt: string }>;
-      if (priceWatchSaved) {
-        localStorage.setItem('nexstore-price-watches', JSON.stringify(watches.filter((item) => item.productId !== product.id)));
-        setPriceWatchSaved(false);
-        success('Price watch removed from this browser.');
+    async function checkEligibility() {
+      if (!product || !user) {
+        setReviewEligibility(null);
         return;
       }
-      const target = Number(priceTarget);
-      if (!Number.isFinite(target) || target <= 0 || target >= product.price) {
-        error('Enter a target price lower than the current price.');
-        return;
+      try {
+        const res = await api.checkReviewEligibility(product.id);
+        setReviewEligibility(res);
+      } catch {
+        setReviewEligibility(null);
       }
-      const next = watches.filter((item) => item.productId !== product.id);
-      next.push({ productId: product.id, productTitle: product.title, currentPrice: product.price, targetPrice: target, createdAt: new Date().toISOString() });
-      localStorage.setItem('nexstore-price-watches', JSON.stringify(next));
-      setPriceWatchSaved(true);
-      success('Price watch saved on this browser. Revisit the product to check for a target-price match.');
-    } catch {
-      error('Could not save the price watch in this browser.');
     }
-  };
+    checkEligibility();
+  }, [product?.id, user?.id]);
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -135,6 +125,11 @@ export function ProductDetail() {
       await api.addReview(product.id, reviewRating, reviewComment.trim());
       success('Thank you! Your review has been published.');
       setReviewComment('');
+      setReviewEligibility({
+        canReview: false,
+        hasDeliveredOrder: true,
+        alreadyReviewed: true,
+      });
       // Reload product data to refresh rating
       const refreshed = await api.getProduct(product.slug);
       setProduct(refreshed);
@@ -148,7 +143,7 @@ export function ProductDetail() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     );
   }
@@ -156,8 +151,8 @@ export function ProductDetail() {
   if (!product) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center space-y-4">
-        <h2 className="text-xl font-bold text-stone-800">Product Not Found</h2>
-        <Link to="/products" className="text-amber-600 font-semibold hover:underline">
+        <h2 className="text-xl font-bold text-slate-800">Product Not Found</h2>
+        <Link to="/products" className="text-indigo-600 font-semibold hover:underline">
           Return to Marketplace Catalog
         </Link>
       </div>
@@ -173,7 +168,7 @@ export function ProductDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left: Images Gallery */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="aspect-square bg-white rounded-3xl border border-[#e7ddd1] overflow-hidden shadow-xs relative">
+          <div className="aspect-square bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs relative">
             <img
               src={selectedImage || product.images[0]}
               alt={product.title}
@@ -199,7 +194,7 @@ export function ProductDetail() {
                   key={idx}
                   onClick={() => setSelectedImage(img)}
                   className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${
-                    selectedImage === img ? 'border-amber-600 scale-95 shadow-sm' : 'border-stone-200 opacity-70 hover:opacity-100'
+                    selectedImage === img ? 'border-indigo-600 scale-95 shadow-sm' : 'border-slate-200 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
@@ -212,14 +207,14 @@ export function ProductDetail() {
         {/* Right: Info & Buying Options */}
         <div className="lg:col-span-6 space-y-6">
           {/* Category & SKU */}
-          <div className="flex items-center justify-between text-xs text-stone-500">
-            <Link to={`/products?category=${product.category.slug}`} className="font-semibold text-amber-600 hover:underline">
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <Link to={`/products?category=${product.category.slug}`} className="font-semibold text-indigo-600 hover:underline">
               {product.category.name}
             </Link>
-            {product.sku && <span className="font-mono text-stone-400">SKU: {product.sku}</span>}
+            {product.sku && <span className="font-mono text-slate-400">SKU: {product.sku}</span>}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 leading-snug">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug">
             {product.title}
           </h1>
 
@@ -229,27 +224,27 @@ export function ProductDetail() {
               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               <span>{product.rating > 0 ? product.rating.toFixed(1) : '4.8'}</span>
             </div>
-            <span className="text-xs text-stone-500">
+            <span className="text-xs text-slate-500">
               {product.numReviews} Verified Buyer Ratings
             </span>
           </div>
 
           {/* Primary Seller Box with Trust Badge */}
-          <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200/90 flex items-center justify-between">
+          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/90 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-stone-800 font-bold text-sm shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm shadow-xs">
                 {product.vendor.storeName.charAt(0)}
               </div>
               <div>
-                <Link to={`/products?vendor=${product.vendor.slug}`} className="text-sm font-bold text-stone-900 hover:text-amber-600">
+                <Link to={`/products?vendor=${product.vendor.slug}`} className="text-sm font-bold text-slate-900 hover:text-indigo-600">
                   {product.vendor.storeName}
                 </Link>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className={`inline-flex items-center gap-1 text-xs font-bold ${trustBadge.colorClass}`}>
                     <ShieldCheck className="w-3.5 h-3.5" /> {trustBadge.badgeLabel}
                   </span>
-                  <span className="text-stone-400 text-xs">•</span>
-                  <span className="text-xs text-stone-600 font-semibold">{product.vendor.trustScore}% Trust Score</span>
+                  <span className="text-slate-400 text-xs">•</span>
+                  <span className="text-xs text-slate-600 font-semibold">{product.vendor.trustScore}% Trust Score</span>
                 </div>
               </div>
             </div>
@@ -258,11 +253,11 @@ export function ProductDetail() {
           {/* Pricing Box */}
           <div className="space-y-1">
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl sm:text-4xl font-black text-stone-900">
+              <span className="text-3xl sm:text-4xl font-black text-slate-900">
                 {formatCurrency(product.price)}
               </span>
               {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-base text-stone-400 line-through font-medium">
+                <span className="text-base text-slate-400 line-through font-medium">
                   {formatCurrency(product.compareAtPrice)}
                 </span>
               )}
@@ -272,27 +267,7 @@ export function ProductDetail() {
                 </span>
               )}
             </div>
-            <p className="text-xs text-stone-400">Inclusive of all taxes. Free delivery on orders over ₹1,000</p>
-          </div>
-
-          {/* Local price watch: browser-only reminder, no push/email claim */}
-          <div className="rounded-2xl border border-[#e7ddd1] bg-[#f8f2ec] p-4 space-y-3">
-            <div className="flex items-start gap-2.5">
-              <BellRing className="w-4 h-4 text-[#8a6042] mt-0.5 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-[#4a3428]">Watch this price</p>
-                <p className="text-xs text-[#806b5a] mt-0.5">Save a target on this device and check back for a price match.</p>
-              </div>
-              {priceWatchSaved && <span className="text-[10px] font-bold uppercase tracking-wide text-[#5d6b4d]">Watching</span>}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <label className="flex-1 text-[11px] text-[#806b5a]">Target price (₹)
-                <input type="number" min="1" max={product.price - 1} value={priceTarget} onChange={(e) => setPriceTarget(e.target.value)} disabled={priceWatchSaved} className="mt-1 block w-full rounded-xl border border-[#dfd0c1] bg-white px-3 py-2 text-sm text-[#33261f] focus:outline-none focus:ring-2 focus:ring-[#b99373] disabled:opacity-60" />
-              </label>
-              <button type="button" onClick={handlePriceWatch} className="self-end rounded-full border border-[#bca087] px-4 py-2.5 text-xs font-semibold text-[#654735] hover:bg-[#eee1d4]">
-                {priceWatchSaved ? 'Remove watch' : 'Set price watch'}
-              </button>
-            </div>
+            <p className="text-xs text-slate-400">Inclusive of all taxes. Free delivery on orders over ₹1,000</p>
           </div>
 
           {/* Eco-Friendly Feature Callout */}
@@ -312,23 +287,23 @@ export function ProductDetail() {
 
           {/* Stock & Quantity */}
           <div className="flex items-center gap-4 pt-2">
-            <span className="text-xs font-bold text-stone-700">Quantity:</span>
-            <div className="flex items-center border border-stone-200 rounded-xl bg-white shadow-xs">
+            <span className="text-xs font-bold text-slate-700">Quantity:</span>
+            <div className="flex items-center border border-slate-200 rounded-xl bg-white shadow-xs">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-3 py-1.5 text-stone-600 hover:text-stone-900 font-bold"
+                className="px-3 py-1.5 text-slate-600 hover:text-slate-900 font-bold"
               >
                 -
               </button>
-              <span className="px-4 py-1.5 text-xs font-bold text-stone-800">{quantity}</span>
+              <span className="px-4 py-1.5 text-xs font-bold text-slate-800">{quantity}</span>
               <button
                 onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                className="px-3 py-1.5 text-stone-600 hover:text-stone-900 font-bold"
+                className="px-3 py-1.5 text-slate-600 hover:text-slate-900 font-bold"
               >
                 +
               </button>
             </div>
-            <span className="text-xs text-stone-500">
+            <span className="text-xs text-slate-500">
               {product.stock > 0 ? (
                 product.stock <= 5 ? (
                   <span className="text-amber-600 font-bold">Only {product.stock} units remaining</span>
@@ -348,8 +323,8 @@ export function ProductDetail() {
               disabled={product.stock <= 0}
               className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
                 product.stock > 0
-                  ? 'bg-[#4a3428] hover:bg-[#634735] text-white shadow-lg shadow-amber-100 active:scale-95'
-                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-100 active:scale-95'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >
               <ShoppingBag className="w-4 h-4" /> Add to Multi-Vendor Cart
@@ -360,8 +335,8 @@ export function ProductDetail() {
               disabled={product.stock <= 0}
               className={`py-3.5 px-6 rounded-xl font-bold text-sm transition-all ${
                 product.stock > 0
-                  ? 'bg-stone-900 hover:bg-stone-800 text-white active:scale-95 shadow-md'
-                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  ? 'bg-slate-900 hover:bg-slate-800 text-white active:scale-95 shadow-md'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >
               Buy Now
@@ -372,26 +347,73 @@ export function ProductDetail() {
               className={`p-3.5 rounded-xl border transition-all ${
                 inWishlist
                   ? 'bg-rose-50 border-rose-200 text-rose-500'
-                  : 'bg-white border-stone-200 text-stone-500 hover:text-rose-500 hover:bg-stone-50'
+                  : 'bg-white border-slate-200 text-slate-500 hover:text-rose-500 hover:bg-slate-50'
               }`}
               title={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
             >
               <Heart className={`w-5 h-5 ${inWishlist ? 'fill-rose-500' : ''}`} />
             </button>
+
+            <button
+              onClick={() => addToCompare(product)}
+              className={`p-3.5 rounded-xl border transition-all ${
+                isCompared(product.id)
+                  ? 'bg-indigo-50 border-indigo-200 text-indigo-600'
+                  : 'bg-white border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-slate-50'
+              }`}
+              title={isCompared(product.id) ? 'Remove from comparison' : 'Compare with other products (max 3)'}
+            >
+              <BarChart2 className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => {
+                if (isWatching(product.id)) {
+                  removePriceWatch(product.id);
+                } else {
+                  setTargetPriceInput(String(Math.round(product.price * 0.9)));
+                  setShowPriceWatchModal(true);
+                }
+              }}
+              className={`p-3.5 rounded-xl border transition-all ${
+                isWatching(product.id)
+                  ? 'bg-amber-50 border-amber-200 text-amber-600'
+                  : 'bg-white border-slate-200 text-slate-500 hover:text-amber-600 hover:bg-slate-50'
+              }`}
+              title={isWatching(product.id) ? `Watching: alert under ₹${getWatchTarget(product.id)} (Click to remove)` : 'Set Price Watch alert'}
+            >
+              {isWatching(product.id) ? <BellRing className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
+            </button>
           </div>
 
+          {/* Price Watch Info Chip if active */}
+          {isWatching(product.id) && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between text-xs text-amber-900">
+              <span className="flex items-center gap-1.5 font-medium">
+                <BellRing className="w-4 h-4 text-amber-600" />
+                Price Watch Active: Alerting when price drops to or below {formatCurrency(getWatchTarget(product.id) || 0)}
+              </span>
+              <button
+                onClick={() => removePriceWatch(product.id)}
+                className="text-xs font-bold text-amber-800 hover:underline"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
           {/* Marketplace Guarantees */}
-          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-stone-100 text-[11px] text-stone-600">
+          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100 text-[11px] text-slate-600">
             <div className="flex items-center gap-2">
-              <Truck className="w-4 h-4 text-amber-500" />
+              <Truck className="w-4 h-4 text-indigo-500" />
               <span>Express Delivery</span>
             </div>
             <div className="flex items-center gap-2">
-              <RotateCcw className="w-4 h-4 text-amber-500" />
+              <RotateCcw className="w-4 h-4 text-indigo-500" />
               <span>7-Day Return Policy</span>
             </div>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-amber-500" />
+              <ShieldCheck className="w-4 h-4 text-indigo-500" />
               <span>Verified Seller</span>
             </div>
           </div>
@@ -414,19 +436,19 @@ export function ProductDetail() {
       )}
 
       {/* Description & Specs */}
-      <section className="bg-white rounded-3xl border border-stone-200 p-8 space-y-4">
-        <h3 className="text-lg font-bold text-stone-900">Product Details & Specifications</h3>
-        <p className="text-sm text-stone-700 leading-relaxed whitespace-pre-line">
+      <section className="bg-white rounded-3xl border border-slate-200 p-8 space-y-4">
+        <h3 className="text-lg font-bold text-slate-900">Product Details & Specifications</h3>
+        <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
           {product.description}
         </p>
       </section>
 
       {/* Ratings and Reviews Section */}
-      <section className="bg-white rounded-3xl border border-stone-200 p-8 space-y-8">
-        <div className="flex items-center justify-between pb-4 border-b border-stone-100">
+      <section className="bg-white rounded-3xl border border-slate-200 p-8 space-y-8">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div>
-            <h3 className="text-lg font-bold text-stone-900">Customer Ratings & Reviews</h3>
-            <p className="text-xs text-stone-500 mt-0.5">Real verified buyer feedback</p>
+            <h3 className="text-lg font-bold text-slate-900">Customer Ratings & Reviews</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Real verified buyer feedback</p>
           </div>
           <div className="flex items-center gap-1.5 text-base font-black text-amber-500">
             <Star className="w-5 h-5 fill-amber-400" />
@@ -435,65 +457,103 @@ export function ProductDetail() {
         </div>
 
         {/* Write a review form */}
-        <form onSubmit={handleReviewSubmit} className="bg-stone-50 rounded-2xl p-5 border border-stone-200/80 space-y-4">
-          <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
-            <MessageSquare className="w-4 h-4 text-amber-600" /> Share Your Product Experience
-          </h4>
+        <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <MessageSquare className="w-4 h-4 text-indigo-600" /> Share Your Product Experience
+            </h4>
+            {user && reviewEligibility && (
+              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
+                reviewEligibility.canReview
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : reviewEligibility.alreadyReviewed
+                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                  : 'bg-amber-50 text-amber-700 border-amber-200'
+              }`}>
+                {reviewEligibility.canReview
+                  ? '✓ Verified Delivered Buyer — Eligible to Review'
+                  : reviewEligibility.alreadyReviewed
+                  ? '✓ You have already reviewed this product'
+                  : '⚠ Verified Delivered Purchase Required to Review'}
+              </span>
+            )}
+          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-600 mb-1">Rating</label>
-            <div className="flex items-center gap-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  type="button"
-                  key={star}
-                  onClick={() => setReviewRating(star)}
-                  className="p-1 hover:scale-110 transition-transform"
-                >
-                  <Star
-                    className={`w-5 h-5 ${
-                      star <= reviewRating
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-stone-300'
-                    }`}
-                  />
-                </button>
-              ))}
-              <span className="text-xs font-bold text-stone-700 ml-2">{reviewRating} Stars</span>
+          {!user ? (
+            <div className="p-4 bg-white rounded-xl border border-slate-200 text-center">
+              <p className="text-xs text-slate-600">Please sign in to share a review for this product.</p>
+              <Link to="/login" className="mt-2 inline-block text-xs font-bold text-indigo-600 hover:underline">
+                Sign In Now
+              </Link>
             </div>
-          </div>
+          ) : reviewEligibility?.alreadyReviewed ? (
+            <div className="p-4 bg-white rounded-xl border border-slate-200 text-center">
+              <p className="text-xs text-slate-600">You have already submitted a review for this product. Thank you for your feedback!</p>
+            </div>
+          ) : !reviewEligibility?.hasDeliveredOrder ? (
+            <div className="p-4 bg-white rounded-xl border border-slate-200 text-center">
+              <p className="text-xs text-slate-600">
+                To guarantee genuine reviews, only customers who have purchased and received this product (DELIVERED status) can submit a review.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleReviewSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Rating</label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() => setReviewRating(star)}
+                      className="p-1 hover:scale-110 transition-transform"
+                    >
+                      <Star
+                        className={`w-5 h-5 ${
+                          star <= reviewRating
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'text-slate-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                  <span className="text-xs font-bold text-slate-700 ml-2">{reviewRating} Stars</span>
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-600 mb-1">Your Review</label>
-            <textarea
-              rows={3}
-              value={reviewComment}
-              onChange={(e) => setReviewComment(e.target.value)}
-              placeholder="Tell others about product quality, value for money, and vendor delivery..."
-              className="w-full text-xs p-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
-            />
-          </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Your Review</label>
+                <textarea
+                  rows={3}
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Tell others about product quality, value for money, and vendor delivery..."
+                  className="w-full text-xs p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                />
+              </div>
 
-          <button
-            type="submit"
-            disabled={submittingReview}
-            className="px-5 py-2.5 bg-[#4a3428] hover:bg-[#634735] text-white font-bold text-xs rounded-xl shadow-sm transition-all"
-          >
-            {submittingReview ? 'Submitting...' : 'Submit Review'}
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={submittingReview}
+                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all disabled:opacity-50"
+              >
+                {submittingReview ? 'Submitting...' : 'Submit Review'}
+              </button>
+            </form>
+          )}
+        </div>
 
         {/* Existing Reviews List */}
         <div className="space-y-4">
           {product.reviews && product.reviews.length > 0 ? (
             product.reviews.map((rev) => (
-              <div key={rev.id} className="p-4 rounded-xl border border-stone-100 bg-stone-50/50 space-y-2">
+              <div key={rev.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">
                       {rev.user.name.charAt(0)}
                     </div>
-                    <span className="text-xs font-bold text-stone-800">{rev.user.name}</span>
+                    <span className="text-xs font-bold text-slate-800">{rev.user.name}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     {[...Array(rev.rating)].map((_, i) => (
@@ -501,17 +561,98 @@ export function ProductDetail() {
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-stone-700 leading-relaxed">{rev.comment}</p>
-                <p className="text-[10px] text-stone-400">{formatDate(rev.createdAt)}</p>
+                <p className="text-xs text-slate-700 leading-relaxed">{rev.comment}</p>
+                <p className="text-[10px] text-slate-400">{formatDate(rev.createdAt)}</p>
               </div>
             ))
           ) : (
-            <p className="text-xs text-stone-500 text-center py-6">
+            <p className="text-xs text-slate-500 text-center py-6">
               No reviews yet. Be the first customer to share your thoughts!
             </p>
           )}
         </div>
       </section>
+
+      {/* Price Watch Target Modal */}
+      {showPriceWatchModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                <Bell className="w-5 h-5 text-amber-500" /> Set Price Drop Alert
+              </h3>
+              <button
+                onClick={() => setShowPriceWatchModal(false)}
+                className="text-slate-400 hover:text-slate-700 text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xs text-slate-600">
+                We'll watch <strong>{product.title}</strong> and instantly alert you whenever the price falls to or below your target.
+              </p>
+
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                <span className="text-slate-500">Current Price:</span>
+                <span className="font-black text-slate-900">{formatCurrency(product.price)}</span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Target Price (₹)
+                </label>
+                <input
+                  type="number"
+                  value={targetPriceInput}
+                  onChange={(e) => setTargetPriceInput(e.target.value)}
+                  placeholder="e.g. 24000"
+                  className="w-full text-sm font-bold p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPriceWatchModal(false)}
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = parseFloat(targetPriceInput);
+                    if (isNaN(target) || target <= 0) {
+                      error('Please enter a valid target price');
+                      return;
+                    }
+                    if (target >= product.price) {
+                      error(`Target price should be lower than the current price (${formatCurrency(product.price)})`);
+                      return;
+                    }
+                    setPriceWatch(
+                      {
+                        id: product.id,
+                        slug: product.slug,
+                        title: product.title,
+                        price: product.price,
+                        image: product.images?.[0],
+                      },
+                      target
+                    );
+                    setShowPriceWatchModal(false);
+                  }}
+                  className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-sm"
+                >
+                  Activate Alert
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
