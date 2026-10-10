@@ -136,7 +136,7 @@ export const api = {
   getAdminAnalytics: () => request<any>('/admin/analytics'),
   getAdminVendors: () => request<any>('/admin/vendors'),
   updateVendorStatus: (id: string, status: string) =>
-    request<any>(`/admin/vendors/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+    request<any>(`/admin/vendors/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
   getAdminCustomers: () => request<any>('/admin/customers'),
   toggleCustomerStatus: (id: string) =>
     request<any>(`/admin/customers/${id}/status`, { method: 'PUT' }),
