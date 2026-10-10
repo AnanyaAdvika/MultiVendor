@@ -95,10 +95,10 @@ export function Navbar() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-24 py-2 text-sm bg-stone-100/80 border border-stone-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all"
               />
-              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -transtone-y-1/2" />
+              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <button
                 type="submit"
-                className="absolute right-1.5 top-1/2 -transtone-y-1/2 px-3.5 py-1 text-xs font-semibold bg-[#4a3428] hover:bg-[#634735] text-white rounded-full transition-colors shadow-sm"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3.5 py-1 text-xs font-semibold bg-[#4a3428] hover:bg-[#634735] text-white rounded-full transition-colors shadow-sm"
               >
                 Search
               </button>
@@ -264,10 +264,10 @@ export function Navbar() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-20 py-2 text-sm bg-stone-100 border border-stone-200 rounded-lg"
                 />
-                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -transtone-y-1/2" />
+                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <button
                   type="submit"
-                  className="absolute right-1.5 top-1/2 -transtone-y-1/2 px-3 py-1 text-xs font-semibold bg-amber-600 text-white rounded-md"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-semibold bg-amber-600 text-white rounded-md"
                 >
                   Search
                 </button>
