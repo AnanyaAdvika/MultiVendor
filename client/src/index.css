@@ -1,41 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: light;
+  --nx-ink: #33261f;
+  --nx-coffee: #654735;
+  --nx-caramel: #a8754f;
+  --nx-paper: #faf7f2;
+  --nx-cream: #f1e8dc;
+  --nx-line: #e7ddd1;
+}
 @layer base {
+  html { scroll-behavior: smooth; }
   body {
-    @apply bg-slate-50 text-slate-900 font-sans selection:bg-indigo-500 selection:text-white;
+    background: var(--nx-paper);
+    color: var(--nx-ink);
+    font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    selection-background-color: #d9c0a8;
   }
+  h1, h2, h3, .font-editorial { font-family: 'Playfair Display', Georgia, serif; }
+  button, a, input, textarea, select { transition-duration: 180ms; }
+  :focus-visible { outline: 2px solid #9b6c4b; outline-offset: 3px; }
 }
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Smooth badges and glow */
-.badge-glow-amber {
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.35);
-}
-
-.badge-glow-green {
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.35);
-}
-
-.badge-glow-indigo {
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.35);
-}
+::selection { background: #e4d1bd; color: #33261f; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f3ece3; }
+::-webkit-scrollbar-thumb { background: #cdb8a4; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #a98b72; }
+.badge-glow-amber, .badge-glow-green, .badge-glow-indigo { box-shadow: none; }
+.nx-editorial-kicker { letter-spacing: .18em; text-transform: uppercase; font-size: .68rem; font-weight: 700; }
+.nx-soft-shadow { box-shadow: 0 16px 40px rgba(75, 51, 35, .07); }

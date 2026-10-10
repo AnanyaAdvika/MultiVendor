@@ -24,6 +24,24 @@ export async function addReview(req: AuthenticatedRequest, res: Response) {
 
     if (!product) return sendError(res, 'Product not found', 404);
 
+    // Reviews are restricted to customers with a delivered vendor sub-order for this exact product.
+    const deliveredPurchase = await prisma.orderItem.findFirst({
+      where: {
+        productId,
+        order: { userId: req.user.id },
+        vendorOrder: { status: 'DELIVERED' },
+      },
+      select: { id: true },
+    });
+    if (!deliveredPurchase) {
+      return sendError(res, 'Only customers with a delivered order for this product can review it', 403);
+    }
+
+    const existingReview = await prisma.review.findFirst({ where: { userId: req.user.id, productId }, select: { id: true } });
+    if (existingReview) {
+      return sendError(res, 'You have already reviewed this product', 409);
+    }
+
     const review = await prisma.review.create({
       data: {
         userId: req.user.id,

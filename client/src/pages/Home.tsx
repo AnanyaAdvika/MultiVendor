@@ -47,49 +47,49 @@ export function Home() {
   }, []);
 
   return (
-    <div className="space-y-16 pb-20">
+    <div className="space-y-14 pb-20 bg-[#faf7f2]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl mx-4 sm:mx-6 lg:mx-8 mt-6 shadow-2xl">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/20 via-transparent to-transparent"></div>
+      <section className="relative overflow-hidden bg-[#eee3d6] text-[#33261f] rounded-[2rem] mx-4 sm:mx-6 lg:mx-8 mt-6 shadow-soft border border-[#e3d4c4]">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#c9a889]/30 via-transparent to-transparent"></div>
         <div className="max-w-7xl mx-auto px-6 sm:px-10 py-16 sm:py-24 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-400/30 text-indigo-300 text-xs font-semibold backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 border border-[#d9c4ae] text-[#79563e] text-xs font-semibold backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-[#9a704f]" />
               <span>Multi-Vendor Marketplace & Smart Deals</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-none">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.04] sm:leading-[1.02] font-editorial">
               Shop Smarter. <br />
-              <span className="bg-gradient-to-r from-amber-300 via-emerald-300 to-indigo-300 bg-clip-text text-transparent">
+              <span className="text-[#9a704f]">
                 Compare Vendors.
               </span> <br />
               Save Instantly.
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
+            <p className="text-base sm:text-lg text-[#6f5a4b] max-w-xl leading-relaxed">
               Why pay more when you can compare identical products from multiple verified sellers in real-time? Check seller trust scores, buy eco-friendly, and checkout from multiple vendors in one single cart.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
                 to="/products"
-                className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95"
+                className="px-6 py-3.5 bg-[#4a3428] hover:bg-[#634735] text-white font-semibold text-sm rounded-full shadow-sm transition-all flex items-center gap-2 hover:-translate-y-0.5"
               >
                 <ShoppingBag className="w-4 h-4" /> Explore Marketplace
               </Link>
               <Link
                 to="/products?ecoFriendly=true"
-                className="px-6 py-3.5 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 font-bold text-sm rounded-xl transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95"
+                className="px-6 py-3.5 bg-white/70 hover:bg-white text-[#5d6b4d] border border-[#d7dfcc] font-bold text-sm rounded-xl transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95"
               >
-                <Leaf className="w-4 h-4 text-emerald-400" /> Eco-Friendly Deals
+                <Leaf className="w-4 h-4 text-[#647653]" /> Eco-Friendly Deals
               </Link>
             </div>
 
             {/* Quick Metrics */}
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-800">
+            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-[#d9c7b5]">
               <div>
-                <p className="text-2xl font-black text-white">100%</p>
-                <p className="text-xs text-slate-400">Verified Vendors</p>
+                <p className="text-2xl font-black text-[#33261f]">100%</p>
+                <p className="text-xs text-[#8d796a]">Verified Vendors</p>
               </div>
               <div>
                 <p className="text-2xl font-black text-amber-400">₹2,900+</p>
@@ -104,36 +104,36 @@ export function Home() {
 
           {/* Hero Feature Visual: Live Best Deal Teaser Card */}
           <div className="lg:col-span-5">
-            <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-700">
-                <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
+            <div className="bg-[#faf7f2]/90 backdrop-blur-xl border border-[#e4d7ca] rounded-[1.5rem] p-6 shadow-soft space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#e5d9cc]">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#9a704f] uppercase tracking-wider">
                   <Sparkles className="w-4 h-4" /> Signature Feature Preview
                 </div>
-                <span className="text-[11px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full font-semibold">
+                <span className="text-[11px] bg-[#e6ecdf] text-[#586849] px-2.5 py-0.5 rounded-full font-semibold">
                   Live Deal Engine
                 </span>
               </div>
 
-              <div className="bg-slate-900/90 rounded-2xl p-4 border border-slate-700/60 space-y-3">
+              <div className="bg-white rounded-2xl p-4 border border-[#eadfd4]/60 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-300">Sony WH-1000XM5 Headphones</span>
-                  <span className="text-xs text-emerald-400 font-bold">Save ₹2,000</span>
+                  <span className="text-xs font-semibold text-[#5f4b3c]">Sony WH-1000XM5 Headphones</span>
+                  <span className="text-xs text-[#6c7a56] font-bold">Save ₹2,000</span>
                 </div>
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-400">
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-[#f8f3ed] border border-[#e9dfd4] text-[#887565]">
                     <span>Seller A: ElectroHub Direct</span>
                     <span className="line-through">₹26,990</span>
                   </div>
-                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 font-bold">
+                  <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#edf1e8] border border-[#cdd7c1] text-[#4e6343] font-bold">
                     <span className="flex items-center gap-1.5">
                       <CheckCircle className="w-4 h-4 text-emerald-400" /> Seller B: GadgetWorld Superstore
                     </span>
-                    <span className="text-white text-sm font-extrabold">₹24,990</span>
+                    <span className="text-[#33261f] text-sm font-extrabold">₹24,990</span>
                   </div>
                 </div>
               </div>
 
-              <div className="p-3 bg-indigo-950/40 border border-indigo-800/40 rounded-xl text-xs text-indigo-200 flex items-center justify-between">
+              <div className="p-3 bg-[#f1e7dc] border border-[#e3d2c0] rounded-xl text-xs text-[#715541] flex items-center justify-between">
                 <span>💡 In Cart: Smart Savings auto-suggests cheaper alternatives.</span>
               </div>
             </div>
@@ -145,10 +145,10 @@ export function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-900">Explore by Category</h2>
+            <h2 className="text-2xl font-extrabold text-[#33261f]">Explore by Category</h2>
             <p className="text-sm text-slate-500 mt-1">Browse multi-vendor collections tailored to your lifestyle</p>
           </div>
-          <Link to="/products" className="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+          <Link to="/products" className="text-sm font-bold text-[#79563e] hover:text-[#4a3428] flex items-center gap-1">
             View All <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -158,7 +158,7 @@ export function Home() {
             <Link
               key={cat.id}
               to={`/products?category=${cat.slug}`}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 hover:shadow-lg hover:border-indigo-200 transition-all duration-300"
+              className="group relative overflow-hidden rounded-[1.35rem] border border-[#e9dfd4] bg-white p-4 hover:shadow-soft hover:border-[#cdb59e] transition-all duration-300"
             >
               <div className="aspect-video rounded-xl overflow-hidden mb-4 bg-slate-100">
                 <img
@@ -167,7 +167,7 @@ export function Home() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <h3 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
+              <h3 className="font-bold text-[#33261f] group-hover:text-[#8a6042] transition-colors text-sm">
                 {cat.name}
               </h3>
               <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{cat.description}</p>
@@ -179,10 +179,10 @@ export function Home() {
       {/* SIGNATURE FEATURE: Live Best Deals Showcase */}
       {bestDeals.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-indigo-500/10 border-2 border-amber-300/80 rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div className="bg-[#f1e7dc] border border-[#e2d0be] rounded-[1.75rem] p-6 sm:p-8 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-200">
+                <div className="w-12 h-12 rounded-2xl bg-[#9a704f] text-white flex items-center justify-center shadow-lg shadow-amber-200">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
@@ -190,11 +190,11 @@ export function Home() {
                     <h2 className="text-xl sm:text-2xl font-black text-slate-900">
                       Best Deal Comparison Spotlight
                     </h2>
-                    <span className="px-2.5 py-0.5 text-xs font-extrabold uppercase bg-amber-500 text-white rounded-full">
+                    <span className="px-2.5 py-0.5 text-xs font-extrabold uppercase bg-[#9a704f] text-white rounded-full">
                       Guaranteed Cheapest
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
+                  <p className="text-xs sm:text-sm text-[#725f50] mt-0.5">
                     Identical products offered by different approved sellers. NexStore highlights the cheapest deal!
                   </p>
                 </div>
@@ -209,7 +209,7 @@ export function Home() {
                 >
                   <div>
                     <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                      <span className="font-semibold text-indigo-600">{deal.category}</span>
+                      <span className="font-semibold text-[#79563e]">{deal.category}</span>
                       <span className="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-md">
                         {deal.totalVendorsCompeting} Sellers Competing
                       </span>
