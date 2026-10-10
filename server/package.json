@@ -12,7 +12,8 @@
     "prisma:generate:sqlite": "prisma generate --schema=prisma/schema.sqlite.prisma",
     "seed": "tsx prisma/seed.ts",
     "seed:sqlite": "tsx prisma/seed.ts --sqlite",
-    "db:setup": "prisma generate && prisma db push && npm run seed"
+    "db:setup": "prisma generate && prisma db push && npm run seed",
+    "seed:catalog": "tsx prisma/seed-expanded-catalog.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
