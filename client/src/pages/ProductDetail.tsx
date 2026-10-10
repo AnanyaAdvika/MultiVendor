@@ -106,7 +106,7 @@ export function ProductDetail() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
       </div>
     );
   }
@@ -114,8 +114,8 @@ export function ProductDetail() {
   if (!product) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center space-y-4">
-        <h2 className="text-xl font-bold text-slate-800">Product Not Found</h2>
-        <Link to="/products" className="text-indigo-600 font-semibold hover:underline">
+        <h2 className="text-xl font-bold text-stone-800">Product Not Found</h2>
+        <Link to="/products" className="text-amber-600 font-semibold hover:underline">
           Return to Marketplace Catalog
         </Link>
       </div>
@@ -131,7 +131,7 @@ export function ProductDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left: Images Gallery */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="aspect-square bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs relative">
+          <div className="aspect-square bg-white rounded-3xl border border-[#e7ddd1] overflow-hidden shadow-xs relative">
             <img
               src={selectedImage || product.images[0]}
               alt={product.title}
@@ -157,7 +157,7 @@ export function ProductDetail() {
                   key={idx}
                   onClick={() => setSelectedImage(img)}
                   className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${
-                    selectedImage === img ? 'border-indigo-600 scale-95 shadow-sm' : 'border-slate-200 opacity-70 hover:opacity-100'
+                    selectedImage === img ? 'border-amber-600 scale-95 shadow-sm' : 'border-stone-200 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
@@ -170,14 +170,14 @@ export function ProductDetail() {
         {/* Right: Info & Buying Options */}
         <div className="lg:col-span-6 space-y-6">
           {/* Category & SKU */}
-          <div className="flex items-center justify-between text-xs text-slate-500">
-            <Link to={`/products?category=${product.category.slug}`} className="font-semibold text-indigo-600 hover:underline">
+          <div className="flex items-center justify-between text-xs text-stone-500">
+            <Link to={`/products?category=${product.category.slug}`} className="font-semibold text-amber-600 hover:underline">
               {product.category.name}
             </Link>
-            {product.sku && <span className="font-mono text-slate-400">SKU: {product.sku}</span>}
+            {product.sku && <span className="font-mono text-stone-400">SKU: {product.sku}</span>}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 leading-snug">
             {product.title}
           </h1>
 
@@ -187,27 +187,27 @@ export function ProductDetail() {
               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               <span>{product.rating > 0 ? product.rating.toFixed(1) : '4.8'}</span>
             </div>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-stone-500">
               {product.numReviews} Verified Buyer Ratings
             </span>
           </div>
 
           {/* Primary Seller Box with Trust Badge */}
-          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/90 flex items-center justify-between">
+          <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200/90 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-800 font-bold text-sm shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-stone-800 font-bold text-sm shadow-xs">
                 {product.vendor.storeName.charAt(0)}
               </div>
               <div>
-                <Link to={`/products?vendor=${product.vendor.slug}`} className="text-sm font-bold text-slate-900 hover:text-indigo-600">
+                <Link to={`/products?vendor=${product.vendor.slug}`} className="text-sm font-bold text-stone-900 hover:text-amber-600">
                   {product.vendor.storeName}
                 </Link>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className={`inline-flex items-center gap-1 text-xs font-bold ${trustBadge.colorClass}`}>
                     <ShieldCheck className="w-3.5 h-3.5" /> {trustBadge.badgeLabel}
                   </span>
-                  <span className="text-slate-400 text-xs">•</span>
-                  <span className="text-xs text-slate-600 font-semibold">{product.vendor.trustScore}% Trust Score</span>
+                  <span className="text-stone-400 text-xs">•</span>
+                  <span className="text-xs text-stone-600 font-semibold">{product.vendor.trustScore}% Trust Score</span>
                 </div>
               </div>
             </div>
@@ -216,11 +216,11 @@ export function ProductDetail() {
           {/* Pricing Box */}
           <div className="space-y-1">
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl sm:text-4xl font-black text-slate-900">
+              <span className="text-3xl sm:text-4xl font-black text-stone-900">
                 {formatCurrency(product.price)}
               </span>
               {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-base text-slate-400 line-through font-medium">
+                <span className="text-base text-stone-400 line-through font-medium">
                   {formatCurrency(product.compareAtPrice)}
                 </span>
               )}
@@ -230,7 +230,7 @@ export function ProductDetail() {
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400">Inclusive of all taxes. Free delivery on orders over ₹1,000</p>
+            <p className="text-xs text-stone-400">Inclusive of all taxes. Free delivery on orders over ₹1,000</p>
           </div>
 
           {/* Eco-Friendly Feature Callout */}
@@ -250,23 +250,23 @@ export function ProductDetail() {
 
           {/* Stock & Quantity */}
           <div className="flex items-center gap-4 pt-2">
-            <span className="text-xs font-bold text-slate-700">Quantity:</span>
-            <div className="flex items-center border border-slate-200 rounded-xl bg-white shadow-xs">
+            <span className="text-xs font-bold text-stone-700">Quantity:</span>
+            <div className="flex items-center border border-stone-200 rounded-xl bg-white shadow-xs">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-3 py-1.5 text-slate-600 hover:text-slate-900 font-bold"
+                className="px-3 py-1.5 text-stone-600 hover:text-stone-900 font-bold"
               >
                 -
               </button>
-              <span className="px-4 py-1.5 text-xs font-bold text-slate-800">{quantity}</span>
+              <span className="px-4 py-1.5 text-xs font-bold text-stone-800">{quantity}</span>
               <button
                 onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                className="px-3 py-1.5 text-slate-600 hover:text-slate-900 font-bold"
+                className="px-3 py-1.5 text-stone-600 hover:text-stone-900 font-bold"
               >
                 +
               </button>
             </div>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-stone-500">
               {product.stock > 0 ? (
                 product.stock <= 5 ? (
                   <span className="text-amber-600 font-bold">Only {product.stock} units remaining</span>
@@ -286,8 +286,8 @@ export function ProductDetail() {
               disabled={product.stock <= 0}
               className={`flex-1 py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
                 product.stock > 0
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-100 active:scale-95'
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  ? 'bg-[#4a3428] hover:bg-[#634735] text-white shadow-lg shadow-amber-100 active:scale-95'
+                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'
               }`}
             >
               <ShoppingBag className="w-4 h-4" /> Add to Multi-Vendor Cart
@@ -298,8 +298,8 @@ export function ProductDetail() {
               disabled={product.stock <= 0}
               className={`py-3.5 px-6 rounded-xl font-bold text-sm transition-all ${
                 product.stock > 0
-                  ? 'bg-slate-900 hover:bg-slate-800 text-white active:scale-95 shadow-md'
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  ? 'bg-stone-900 hover:bg-stone-800 text-white active:scale-95 shadow-md'
+                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'
               }`}
             >
               Buy Now
@@ -310,7 +310,7 @@ export function ProductDetail() {
               className={`p-3.5 rounded-xl border transition-all ${
                 inWishlist
                   ? 'bg-rose-50 border-rose-200 text-rose-500'
-                  : 'bg-white border-slate-200 text-slate-500 hover:text-rose-500 hover:bg-slate-50'
+                  : 'bg-white border-stone-200 text-stone-500 hover:text-rose-500 hover:bg-stone-50'
               }`}
               title={inWishlist ? 'Remove from wishlist' : 'Save to wishlist'}
             >
@@ -319,17 +319,17 @@ export function ProductDetail() {
           </div>
 
           {/* Marketplace Guarantees */}
-          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-100 text-[11px] text-slate-600">
+          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-stone-100 text-[11px] text-stone-600">
             <div className="flex items-center gap-2">
-              <Truck className="w-4 h-4 text-indigo-500" />
+              <Truck className="w-4 h-4 text-amber-500" />
               <span>Express Delivery</span>
             </div>
             <div className="flex items-center gap-2">
-              <RotateCcw className="w-4 h-4 text-indigo-500" />
+              <RotateCcw className="w-4 h-4 text-amber-500" />
               <span>7-Day Return Policy</span>
             </div>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-indigo-500" />
+              <ShieldCheck className="w-4 h-4 text-amber-500" />
               <span>Verified Seller</span>
             </div>
           </div>
@@ -352,19 +352,19 @@ export function ProductDetail() {
       )}
 
       {/* Description & Specs */}
-      <section className="bg-white rounded-3xl border border-slate-200 p-8 space-y-4">
-        <h3 className="text-lg font-bold text-slate-900">Product Details & Specifications</h3>
-        <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+      <section className="bg-white rounded-3xl border border-stone-200 p-8 space-y-4">
+        <h3 className="text-lg font-bold text-stone-900">Product Details & Specifications</h3>
+        <p className="text-sm text-stone-700 leading-relaxed whitespace-pre-line">
           {product.description}
         </p>
       </section>
 
       {/* Ratings and Reviews Section */}
-      <section className="bg-white rounded-3xl border border-slate-200 p-8 space-y-8">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <section className="bg-white rounded-3xl border border-stone-200 p-8 space-y-8">
+        <div className="flex items-center justify-between pb-4 border-b border-stone-100">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Customer Ratings & Reviews</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Real verified buyer feedback</p>
+            <h3 className="text-lg font-bold text-stone-900">Customer Ratings & Reviews</h3>
+            <p className="text-xs text-stone-500 mt-0.5">Real verified buyer feedback</p>
           </div>
           <div className="flex items-center gap-1.5 text-base font-black text-amber-500">
             <Star className="w-5 h-5 fill-amber-400" />
@@ -373,13 +373,13 @@ export function ProductDetail() {
         </div>
 
         {/* Write a review form */}
-        <form onSubmit={handleReviewSubmit} className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-4">
-          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-            <MessageSquare className="w-4 h-4 text-indigo-600" /> Share Your Product Experience
+        <form onSubmit={handleReviewSubmit} className="bg-stone-50 rounded-2xl p-5 border border-stone-200/80 space-y-4">
+          <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
+            <MessageSquare className="w-4 h-4 text-amber-600" /> Share Your Product Experience
           </h4>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Rating</label>
+            <label className="block text-xs font-semibold text-stone-600 mb-1">Rating</label>
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -392,30 +392,30 @@ export function ProductDetail() {
                     className={`w-5 h-5 ${
                       star <= reviewRating
                         ? 'fill-amber-400 text-amber-400'
-                        : 'text-slate-300'
+                        : 'text-stone-300'
                     }`}
                   />
                 </button>
               ))}
-              <span className="text-xs font-bold text-slate-700 ml-2">{reviewRating} Stars</span>
+              <span className="text-xs font-bold text-stone-700 ml-2">{reviewRating} Stars</span>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Your Review</label>
+            <label className="block text-xs font-semibold text-stone-600 mb-1">Your Review</label>
             <textarea
               rows={3}
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
               placeholder="Tell others about product quality, value for money, and vendor delivery..."
-              className="w-full text-xs p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+              className="w-full text-xs p-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
             />
           </div>
 
           <button
             type="submit"
             disabled={submittingReview}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all"
+            className="px-5 py-2.5 bg-[#4a3428] hover:bg-[#634735] text-white font-bold text-xs rounded-xl shadow-sm transition-all"
           >
             {submittingReview ? 'Submitting...' : 'Submit Review'}
           </button>
@@ -425,13 +425,13 @@ export function ProductDetail() {
         <div className="space-y-4">
           {product.reviews && product.reviews.length > 0 ? (
             product.reviews.map((rev) => (
-              <div key={rev.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+              <div key={rev.id} className="p-4 rounded-xl border border-stone-100 bg-stone-50/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center">
                       {rev.user.name.charAt(0)}
                     </div>
-                    <span className="text-xs font-bold text-slate-800">{rev.user.name}</span>
+                    <span className="text-xs font-bold text-stone-800">{rev.user.name}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     {[...Array(rev.rating)].map((_, i) => (
@@ -439,12 +439,12 @@ export function ProductDetail() {
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-slate-700 leading-relaxed">{rev.comment}</p>
-                <p className="text-[10px] text-slate-400">{formatDate(rev.createdAt)}</p>
+                <p className="text-xs text-stone-700 leading-relaxed">{rev.comment}</p>
+                <p className="text-[10px] text-stone-400">{formatDate(rev.createdAt)}</p>
               </div>
             ))
           ) : (
-            <p className="text-xs text-slate-500 text-center py-6">
+            <p className="text-xs text-stone-500 text-center py-6">
               No reviews yet. Be the first customer to share your thoughts!
             </p>
           )}
