@@ -11,6 +11,7 @@ import {
   Sparkles,
   ArrowRight,
   MessageSquare,
+  BellRing,
 } from 'lucide-react';
 import { Product } from '../types/index.js';
 import { api } from '../services/api.js';
@@ -38,6 +39,8 @@ export function ProductDetail() {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [priceTarget, setPriceTarget] = useState('');
+  const [priceWatchSaved, setPriceWatchSaved] = useState(false);
 
   useEffect(() => {
     async function loadProduct() {
@@ -57,6 +60,45 @@ export function ProductDetail() {
     }
     loadProduct();
   }, [slug]);
+
+  useEffect(() => {
+    if (!product) return;
+    try {
+      const watches = JSON.parse(localStorage.getItem('nexstore-price-watches') || '[]') as Array<{ productId: string; targetPrice: number }>;
+      const watch = watches.find((item) => item.productId === product.id);
+      setPriceWatchSaved(Boolean(watch));
+      setPriceTarget(watch ? String(watch.targetPrice) : String(Math.max(1, Math.floor(product.price * 0.9))));
+      if (watch && product.price <= watch.targetPrice) success('Price watch update: this product is at or below your target price.');
+    } catch {
+      setPriceWatchSaved(false);
+      setPriceTarget(String(Math.max(1, Math.floor(product.price * 0.9))));
+    }
+  }, [product?.id]);
+
+  const handlePriceWatch = () => {
+    if (!product) return;
+    try {
+      const watches = JSON.parse(localStorage.getItem('nexstore-price-watches') || '[]') as Array<{ productId: string; productTitle: string; currentPrice: number; targetPrice: number; createdAt: string }>;
+      if (priceWatchSaved) {
+        localStorage.setItem('nexstore-price-watches', JSON.stringify(watches.filter((item) => item.productId !== product.id)));
+        setPriceWatchSaved(false);
+        success('Price watch removed from this browser.');
+        return;
+      }
+      const target = Number(priceTarget);
+      if (!Number.isFinite(target) || target <= 0 || target >= product.price) {
+        error('Enter a target price lower than the current price.');
+        return;
+      }
+      const next = watches.filter((item) => item.productId !== product.id);
+      next.push({ productId: product.id, productTitle: product.title, currentPrice: product.price, targetPrice: target, createdAt: new Date().toISOString() });
+      localStorage.setItem('nexstore-price-watches', JSON.stringify(next));
+      setPriceWatchSaved(true);
+      success('Price watch saved on this browser. Revisit the product to check for a target-price match.');
+    } catch {
+      error('Could not save the price watch in this browser.');
+    }
+  };
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -231,6 +273,26 @@ export function ProductDetail() {
               )}
             </div>
             <p className="text-xs text-stone-400">Inclusive of all taxes. Free delivery on orders over ₹1,000</p>
+          </div>
+
+          {/* Local price watch: browser-only reminder, no push/email claim */}
+          <div className="rounded-2xl border border-[#e7ddd1] bg-[#f8f2ec] p-4 space-y-3">
+            <div className="flex items-start gap-2.5">
+              <BellRing className="w-4 h-4 text-[#8a6042] mt-0.5 shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-[#4a3428]">Watch this price</p>
+                <p className="text-xs text-[#806b5a] mt-0.5">Save a target on this device and check back for a price match.</p>
+              </div>
+              {priceWatchSaved && <span className="text-[10px] font-bold uppercase tracking-wide text-[#5d6b4d]">Watching</span>}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <label className="flex-1 text-[11px] text-[#806b5a]">Target price (₹)
+                <input type="number" min="1" max={product.price - 1} value={priceTarget} onChange={(e) => setPriceTarget(e.target.value)} disabled={priceWatchSaved} className="mt-1 block w-full rounded-xl border border-[#dfd0c1] bg-white px-3 py-2 text-sm text-[#33261f] focus:outline-none focus:ring-2 focus:ring-[#b99373] disabled:opacity-60" />
+              </label>
+              <button type="button" onClick={handlePriceWatch} className="self-end rounded-full border border-[#bca087] px-4 py-2.5 text-xs font-semibold text-[#654735] hover:bg-[#eee1d4]">
+                {priceWatchSaved ? 'Remove watch' : 'Set price watch'}
+              </button>
+            </div>
           </div>
 
           {/* Eco-Friendly Feature Callout */}
