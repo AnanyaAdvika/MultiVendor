@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Filter, SlidersHorizontal, Leaf, X, RotateCcw, ArrowLeftRight } from 'lucide-react';
+import { Filter, SlidersHorizontal, Leaf, X, RotateCcw } from 'lucide-react';
 import { Product, Category, Vendor } from '../types/index.js';
 import { api } from '../services/api.js';
 import { ProductCard } from '../components/customer/ProductCard.js';
