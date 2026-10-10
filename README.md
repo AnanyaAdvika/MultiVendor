@@ -73,7 +73,7 @@ The refreshed customer experience uses a warm editorial palette—paper beige, c
 
 ### Demo catalog note
 
-These are generated sample listings intended for development and demos, not live supplier inventory. Product prices, ratings and stock values in the generated catalog are illustrative. The seed script clears and recreates the demo database before inserting records, so **do not run it against a database containing data you need to keep**.
+These are generated sample listings intended for development and demos, not live supplier inventory. Product prices, ratings and stock values in the generated catalog are illustrative. To add just the expanded listings to an existing demo database without deleting current records, run `cd server && npm run seed:catalog`. This incremental command skips products that already exist. The original full `npm run seed` script still clears and recreates demo records, so **do not run the full seed against a database containing data you need to keep**.
 
 ### Features that still need real integrations before production
 
